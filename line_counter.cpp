@@ -11,7 +11,7 @@
 
 namespace fs = std::filesystem;
 short result = 0;	
-
+int all_rows = 0;
 
 void read_file(const fs::path& filename)
 {
@@ -32,8 +32,7 @@ void read_file(const fs::path& filename)
 			++count;
 		}
 	}
-	std::cout << filename << std::endl;
-	std::cout << count << std::endl;
+	all_rows += count;
 }
 
 
@@ -55,11 +54,11 @@ int main(int argc, char *argv[]) {
 				t.join();
 			}
 		}
+		std::cout << all_rows; 
 	}
 	catch(const std::string s) {
 		std::cout << s;
 		result = -1;
-	}
-	
+	}	
 	return result;
 }
