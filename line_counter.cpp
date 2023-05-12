@@ -1,0 +1,65 @@
+#include <filesystem>
+#include <fstream> 
+#include <iostream>
+#include <thread>
+#include <vector>
+
+#include <boost/format.hpp>
+#include <boost/thread/thread.hpp>
+
+#include "messages.h"
+
+namespace fs = std::filesystem;
+short result = 0;	
+
+
+void read_file(const fs::path& filename)
+{
+	std::string buf(
+		(std::istreambuf_iterator<char>(
+			*(std::unique_ptr<std::ifstream>(
+				new std::basic_ifstream<char>(filename)
+			)).get()
+		)),
+		std::istreambuf_iterator<char>()
+	);
+	size_t end = 0;
+	char delim = '\n';
+	short count = 0;
+			
+	while ((end = buf.find(delim, end)) != std::string::npos) {
+		while (buf[end++] == delim) {
+			++count;
+		}
+	}
+	std::cout << filename << std::endl;
+	std::cout << count << std::endl;
+}
+
+
+int main(int argc, char *argv[]) {
+
+	try {
+		if ((argc != 2) or !fs::is_directory(argv[1])) {
+			throw((boost::format(Err_dir) % argv[0]).str());
+		}		
+		
+		std::vector<std::thread> thread_group; 
+		
+		for (const auto dir_entry : fs::directory_iterator{argv[1]}) {		
+			thread_group.push_back(std::thread(&read_file, dir_entry.path()));
+		}
+
+		for (auto& t : thread_group) {
+			if (t.joinable()) {
+				t.join();
+			}
+		}
+	}
+	catch(const std::string s) {
+		std::cout << s;
+		result = -1;
+	}
+	
+	return result;
+}
