@@ -5,7 +5,6 @@
 #include <vector>
 
 #include <boost/format.hpp>
-#include <boost/thread/thread.hpp>
 
 #include "messages.h"
 
