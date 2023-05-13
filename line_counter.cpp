@@ -12,8 +12,13 @@ namespace fs = std::filesystem;
 short result = 0;	
 int all_rows = 0;
 
+
 void read_file(const fs::path& filename)
 {
+	const char delim = '\n';
+	size_t end = 0;	
+	short count = 0;
+	
 	std::string buf(
 		(std::istreambuf_iterator<char>(
 			*(std::unique_ptr<std::ifstream>(
@@ -22,9 +27,6 @@ void read_file(const fs::path& filename)
 		)),
 		std::istreambuf_iterator<char>()
 	);
-	size_t end = 0;
-	char delim = '\n';
-	short count = 0;
 			
 	while ((end = buf.find(delim, end)) != std::string::npos) {
 		while (buf[end++] == delim) {
@@ -48,7 +50,7 @@ int main(int argc, char *argv[]) {
 			thread_group.push_back(std::thread(&read_file, dir_entry.path()));
 		}
 
-		for (auto& t : thread_group) {
+		for (auto &t : thread_group) {
 			if (t.joinable()) {
 				t.join();
 			}
